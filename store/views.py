@@ -10,16 +10,27 @@ from django.contrib.auth.decorators import login_required
 from .forms import SupplierSignUpForm, PlantForm
 from .models import Supplier, Plant
 from .decorators import supplier_required
+from django.shortcuts import render, redirect
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import SupplierSignUpForm
 
+#index
+def index(request):
+    return render(request, 'store/index.html')
+
+#plant list 
 def plant_list(request):
     categories = Category.objects.all()
     plants = Plant.objects.all()
     return render(request, 'store/plant_list.html', {'categories': categories, 'plants': plants})
 
+#plant detail
 def plant_detail(request, pk):
     plant = get_object_or_404(Plant, pk=pk)
     return render(request, 'store/plant_detail.html', {'plant': plant})
 
+#login view 
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -31,6 +42,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'store/login.html', {'form': form})
 
+#signup view 
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -41,10 +53,12 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'store/signup.html', {'form': form})
 
+#logoutview
 def logout_view(request):
     auth_logout(request)
-    return redirect('plant_list')
+    return redirect('index')
 
+#loginview
 @login_required
 def add_to_cart(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
@@ -57,6 +71,7 @@ def add_to_cart(request, plant_id):
     
     return redirect('cart')
 
+#cartview
 @login_required
 def cart_view(request):
     cart = get_object_or_404(Cart, user=request.user)
@@ -68,12 +83,14 @@ def cart_view(request):
     }
     return render(request, 'store/cart.html', context)
 
+#remove from cart
 @login_required
 def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id)
     cart_item.delete()
     return redirect('cart')
 
+#update card
 @login_required
 def update_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id)
@@ -84,12 +101,7 @@ def update_cart(request, item_id):
             cart_item.save()
     return redirect('cart')
 
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import SupplierSignUpForm
-
+#supplier signup
 def supplier_signup(request):
     if request.method == 'POST':
         form = SupplierSignUpForm(request.POST)
@@ -101,6 +113,7 @@ def supplier_signup(request):
         form = SupplierSignUpForm()
     return render(request, 'store/supplier_signup.html', {'form': form})
 
+#supplier login
 def supplier_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -112,24 +125,14 @@ def supplier_login(request):
         form = AuthenticationForm()
     return render(request, 'store/supplier_login.html', {'form': form})
 
-def supplier_dashboard(request):
-    return render(request, 'store/supplier_dashboard.html')
-
-def index(request):
-    return render(request, 'store/index.html')
-
-@login_required
+#supplier dashboard
 def supplier_dashboard(request):
     # Ensure the user is a supplier
-    try:
-        supplier = request.user.supplier
-    except Supplier.DoesNotExist:
-        return redirect('plant_list')  # Or handle appropriately
-
+    supplier = request.user.supplier
     plants = supplier.plants.all()
     return render(request, 'store/supplier_dashboard.html', {'plants': plants})
 
-@login_required
+#supplier add plant
 def add_plant(request):
     # Ensure the user is a supplier
     try:
@@ -148,7 +151,7 @@ def add_plant(request):
         form = PlantForm()
     return render(request, 'store/add_plant.html', {'form': form})
 
-@login_required
+#supplier edit plant 
 def edit_plant(request, plant_id):
     # Ensure the user is a supplier
     try:
@@ -166,7 +169,7 @@ def edit_plant(request, plant_id):
         form = PlantForm(instance=plant)
     return render(request, 'store/edit_plant.html', {'form': form, 'plant': plant})
 
-@login_required
+#supplier delete plant
 def delete_plant(request, plant_id):
     # Ensure the user is a supplier
     try:
