@@ -26,6 +26,7 @@ def plant_list(request):
     return render(request, 'store/plant_list.html', {'categories': categories, 'plants': plants})
 
 #plant detail
+@login_required
 def plant_detail(request, pk):
     plant = get_object_or_404(Plant, pk=pk)
     return render(request, 'store/plant_detail.html', {'plant': plant})
