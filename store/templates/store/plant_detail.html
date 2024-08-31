@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ plant.name }}</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        /* Inline CSS for quick adjustments, can be moved to styles.css */
+        .plant-detail-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .plant-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px; /* Set a fixed width for the image */
+            object-fit: cover; /* Ensures the image is properly contained */
+        }
+
+        .plant-detail-info {
+            max-width: 400px;
+        }
+
+        .plant-detail-info p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .back-to-list {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-to-list:hover {
+            background-color: #45a049;
+        }
+
+        .add-to-cart-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #FFA500;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #FF8C00;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ plant.name }}</h1>
+    </header>
+    <nav>
+        <a href="{% url 'plant_list' %}">Home</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="cart">View Cart</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">Logout</a>
+            <a href="{% url 'cart' %}">Cart</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Sign Up</a>
+        {% endif %}
+    </nav>
+    <div class="container plant-detail">
+        <div class="plant-detail-content">
+            {% if plant.image %}
+                <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-image">
+            {% else %}
+                <img src="{% static 'store/images/default.png' %}" alt="Default image" class="plant-image">
+            {% endif %}
+            <div class="plant-detail-info">
+                <p><strong>Category:</strong> {{ plant.category.name }}</p>
+                <p><strong>Price:</strong> ₹{{ plant.price }}</p>
+                <p><strong>Description:</strong> {{ plant.description }}</p>
+                <p><strong>In Stock:</strong> {{ plant.stock }}</p>
+                
+                <!-- Add to Cart Form -->
+                <form action="{% url 'add_to_cart' plant.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                </form>
+                <a href="{% url 'plant_list' %}" class="back-to-list">Back to Plant List</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

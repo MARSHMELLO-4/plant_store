@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supplier Login</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+</head>
+<body>
+    <h2>Supplier Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+
+    <div>
+        <p>Don't have a login ID?</p>
+        <p><a href="{% url 'supplier_signup' %}">Sign up here</a></p>
+    </div>
+</body>
+</html>

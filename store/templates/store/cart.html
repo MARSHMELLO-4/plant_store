@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            margin: 10px;
+            text-align: center;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #4CAF50;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+        }
+        ul li:last-child {
+            border-bottom: none;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-item img {
+            max-width: 50px;
+            margin-right: 15px;
+        }
+        .cart-item p {
+            margin: 0;
+        }
+        .cart-item .actions {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item .actions form {
+            margin: 0;
+        }
+        .cart-item .actions form input[type="number"] {
+            width: 50px;
+            margin-right: 10px;
+        }
+        .total {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Your Cart</h1>
+    </header>
+    <nav>
+        <a href="{% url 'plant_list' %}">Home</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Sign Up</a>
+        {% endif %}
+    </nav>
+    <div class="container">
+        <h2>Your Cart</h2>
+        <ul>
+            {% for item in cart_items %}
+            <li class="cart-item">
+                <div class="details">
+                    {% if item.plant.image %}
+                        <img src="{{ item.plant.image.url }}" alt="{{ item.plant.name }}">
+                    {% else %}
+                        <img src="{% static 'store/images/default.png' %}" alt="Default image">
+                    {% endif %}
+                    <p>{{ item.plant.name }} - ₹{{ item.plant.price }} x {{ item.quantity }}</p>
+                </div>
+                <div class="actions">
+                    <form action="{% url 'update_cart' item.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                        <button type="submit">Update</button>
+                    </form>
+                    <form action="{% url 'remove_from_cart' item.id %}" method="post" style="margin-left: 10px;">
+                        {% csrf_token %}
+                        <button type="submit">Remove</button>
+                    </form>
+                </div>
+            </li>
+            {% empty %}
+            <li>Your cart is empty.</li>
+            {% endfor %}
+        </ul>
+        <div class="total">
+            <p><strong>Total:</strong> ₹{{ total }}</p>
+        </div>
+        <a href="{% url 'plant_list' %}" class="btn">Continue Shopping</a>
+    </div>
+</body>
+</html>

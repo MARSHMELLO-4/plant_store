@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            background-image: url("https://images.unsplash.com/photo-1719563015070-244a60e4412b?q=80&w=2065&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 1s ease-in-out;
+            backdrop-filter: blur(10px);
+        }
+        header h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            background-color: transparent; /* Ensure no background color */
+            padding: 0; /* Remove any padding */
+        }
+        nav {
+            text-align: center;
+            margin-top: 10px;
+        }
+        nav a {
+            text-decoration: none;
+            color: #007BFF;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #0056b3;
+        }
+        .login-form {
+            margin-top: 20px;
+        }
+        .login-form p {
+            margin-bottom: 15px;
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        .login-form input[type="text"]:focus,
+        .login-form input[type="password"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        .submit-button {
+            width: 100%;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+        .error-messages {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .signup-prompt {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .signup-prompt a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .signup-prompt a:hover {
+            color: #0056b3;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        /* Add some animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <header>
+            <h1>Login to Your Account</h1>
+        </header>
+        <div class="login-form">
+            <form method="post">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="error-messages">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p class="error">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {{ form.as_p }}
+                <button type="submit" class="submit-button">Login</button>
+                <p class="signup-prompt">Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

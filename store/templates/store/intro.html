@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Plant Store</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e0f7fa;
+        }
+        .intro-container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #ffffff;
+            background-color: #00796b;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="intro-container">
+        <h1>Welcome to Our Plant Store!</h1>
+        <p>Your one-stop shop for a diverse selection of plants to enhance your home and garden. We offer a range of indoor and outdoor plants to suit every need and preference.</p>
+        <a href="{% url 'login' %}" class="button">Go to Login Page</a>
+    </div>
+</body>
+</html>

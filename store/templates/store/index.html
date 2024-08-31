@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify User Role</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Your Role</h2>
+        <form id="roleForm">
+            <div class="form-group">
+                <label for="role">Select your role:</label>
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>Select a role</option>
+                    <option value="customer">Customer</option>
+                    <option value="supplier">Supplier</option>
+                </select>
+            </div>
+            <button type="button" onclick="verifyRole()">Submit</button>
+        </form>
+        <div id="result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function verifyRole() {
+            const role = document.getElementById('role').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (role === 'customer') {
+                resultDiv.innerHTML = '<p>You are a Customer. <a href="/login">Go to Customer Dashboard</a></p>';
+            } else if (role === 'supplier') {
+                resultDiv.innerHTML = '<p>You are a Supplier. <a href="/supplier_login">Go to Supplier Dashboard</a></p>';
+            } else {
+                resultDiv.innerHTML = '<p>Please select a valid role.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
