@@ -5,6 +5,11 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Plant, Category, Cart, CartItem
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .forms import SupplierSignUpForm, PlantForm
+from .models import Supplier, Plant
+from .decorators import supplier_required
 
 def plant_list(request):
     categories = Category.objects.all()
@@ -112,3 +117,65 @@ def supplier_dashboard(request):
 
 def index(request):
     return render(request, 'store/index.html')
+
+@login_required
+def supplier_dashboard(request):
+    # Ensure the user is a supplier
+    try:
+        supplier = request.user.supplier
+    except Supplier.DoesNotExist:
+        return redirect('plant_list')  # Or handle appropriately
+
+    plants = supplier.plants.all()
+    return render(request, 'store/supplier_dashboard.html', {'plants': plants})
+
+@login_required
+def add_plant(request):
+    # Ensure the user is a supplier
+    try:
+        supplier = request.user.supplier
+    except Supplier.DoesNotExist:
+        return redirect('plant_list')  # Or handle appropriately
+
+    if request.method == 'POST':
+        form = PlantForm(request.POST, request.FILES)
+        if form.is_valid():
+            plant = form.save(commit=False)
+            plant.supplier = supplier
+            plant.save()
+            return redirect('supplier_dashboard')
+    else:
+        form = PlantForm()
+    return render(request, 'store/add_plant.html', {'form': form})
+
+@login_required
+def edit_plant(request, plant_id):
+    # Ensure the user is a supplier
+    try:
+        supplier = request.user.supplier
+    except Supplier.DoesNotExist:
+        return redirect('plant_list')  # Or handle appropriately
+
+    plant = get_object_or_404(Plant, id=plant_id, supplier=supplier)
+    if request.method == 'POST':
+        form = PlantForm(request.POST, request.FILES, instance=plant)
+        if form.is_valid():
+            form.save()
+            return redirect('supplier_dashboard')
+    else:
+        form = PlantForm(instance=plant)
+    return render(request, 'store/edit_plant.html', {'form': form, 'plant': plant})
+
+@login_required
+def delete_plant(request, plant_id):
+    # Ensure the user is a supplier
+    try:
+        supplier = request.user.supplier
+    except Supplier.DoesNotExist:
+        return redirect('plant_list')  # Or handle appropriately
+
+    plant = get_object_or_404(Plant, id=plant_id, supplier=supplier)
+    if request.method == 'POST':
+        plant.delete()
+        return redirect('supplier_dashboard')
+    return render(request, 'store/delete_plant.html', {'plant': plant})

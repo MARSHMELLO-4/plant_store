@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Customer
+from .models import Plant
 
 class SupplierSignUpForm(UserCreationForm):
     company_name = forms.CharField(max_length=255)
@@ -58,3 +59,11 @@ class CustomerSignUpForm(forms.ModelForm):
             address=self.cleaned_data['address']
         )
         return user
+
+class PlantForm(forms.ModelForm):
+    class Meta:
+        model = Plant
+        fields = ['name', 'description', 'price', 'image', 'stock', 'category']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }

@@ -1,0 +1,27 @@
+<!-- store/templates/store/delete_plant.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Plant - {{ plant.name }}</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        /* Add any additional styles here */
+        .confirmation {
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation">
+        <h2>Are you sure you want to delete "{{ plant.name }}"?</h2>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Yes, Delete</button>
+            <a href="{% url 'supplier_dashboard' %}">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

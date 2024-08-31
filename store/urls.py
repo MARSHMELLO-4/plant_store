@@ -15,6 +15,11 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('supplier_signup/', views.supplier_signup, name='supplier_signup'),
     path('supplier_login/', views.supplier_login, name='supplier_login'),
-    path('supplier_dashboard/', views.supplier_dashboard, name='supplier_dashboard'),
-    path('', views.index, name='index')
+    path('', views.supplier_dashboard, name='supplier_dashboard'),
+    path('index/', views.index, name='index'),
+    path('supplier_signup/', views.supplier_signup, name='supplier_signup'),
+    path('supplier_login/', views.supplier_login, name='supplier_login'),
+    path('add_plant/', views.add_plant, name='add_plant'),
+    path('edit_plant/<int:plant_id>/', views.edit_plant, name='edit_plant'),
+    path('delete_plant/<int:plant_id>/', views.delete_plant, name='delete_plant'),
 ]

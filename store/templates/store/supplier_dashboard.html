@@ -1,12 +1,71 @@
+<!-- store/templates/store/supplier_dashboard.html -->
 {% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Supplier Dashboard</title>
     <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        /* Add any additional styles here */
+        .plant-list {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .plant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .plant-item img {
+            max-width: 100px;
+            margin-right: 20px;
+        }
+        .actions a, .actions form {
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Welcome to the Supplier Dashboard</h2>
-    <p>Manage your products here</p>
+    <header>
+        <h1>Supplier Dashboard</h1>
+        <nav>
+            <a href="{% url 'plant_list' %}">Home</a>
+            <a href="{% url 'add_plant' %}">Add New Plant</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+    <div class="plant-list">
+        <h2>Your Plants</h2>
+        {% if plants %}
+            {% for plant in plants %}
+                <div class="plant-item">
+                    <div class="details">
+                        {% if plant.image %}
+                            <img src="{{ plant.image.url }}" alt="{{ plant.name }}">
+                        {% else %}
+                            <img src="{% static 'store/images/default.png' %}" alt="Default image">
+                        {% endif %}
+                        <div>
+                            <h3>{{ plant.name }}</h3>
+                            <p>Price: ₹{{ plant.price }}</p>
+                            <p>Stock: {{ plant.stock }}</p>
+                            <p>Category: {{ plant.category.name }}</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a href="{% url 'edit_plant' plant.id %}">Edit</a>
+                        <form action="{% url 'delete_plant' plant.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this plant?');">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>You have not added any plants yet. <a href="{% url 'add_plant' %}">Add a new plant</a>.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

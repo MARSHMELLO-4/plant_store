@@ -1,7 +1,15 @@
-
 from django.conf import settings
 from django.db import models
 
+class Supplier(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    company_name = models.CharField(max_length=255)
+    contact_number = models.CharField(max_length=15)
+    address = models.TextField()
+
+    def __str__(self):
+        return self.company_name
+    
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -10,12 +18,13 @@ class Category(models.Model):
         return self.name
 
 class Plant(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-    stock = models.IntegerField()
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name='plants')
+    name = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='plants/', null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='plants/', blank=True, null=True)
+    stock = models.PositiveIntegerField(default=0)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -54,12 +63,3 @@ class CartItem(models.Model):
 
     def get_total_price(self):
         return self.quantity * self.plant.price
-
-class Supplier(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    company_name = models.CharField(max_length=255)
-    contact_number = models.CharField(max_length=15)
-    address = models.TextField()
-
-    def __str__(self):
-        return self.company_name

@@ -1,0 +1,32 @@
+<!-- store/templates/store/add_plant.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Plant</title>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}">
+    <style>
+        /* Add any additional styles here */
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Add New Plant</h1>
+        <nav>
+            <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Plant</button>
+        </form>
+    </div>
+</body>
+</html>
