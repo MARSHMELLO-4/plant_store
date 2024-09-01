@@ -22,4 +22,9 @@ urlpatterns = [
     path('add_plant/', views.add_plant, name='add_plant'),
     path('edit_plant/<int:plant_id>/', views.edit_plant, name='edit_plant'),
     path('delete_plant/<int:plant_id>/', views.delete_plant, name='delete_plant'),
+    path('update_customer/', views.update_customer_details, name='update_customer_details'),
+    path('update_supplier/', views.update_supplier_details, name='update_supplier_details'),
+    path('place_order/', views.place_order, name='place_order'),
+    path('order_success/', views.order_success, name='order_success'),
+    path('complete_profile/', views.complete_profile, name='complete_profile'),
 ]

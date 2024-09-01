@@ -99,7 +99,11 @@
                 <p><strong>Price:</strong> ₹{{ plant.price }}</p>
                 <p><strong>Description:</strong> {{ plant.description }}</p>
                 <p><strong>In Stock:</strong> {{ plant.stock }}</p>
-                
+                <!-- Display Supplier Details -->
+                <h2>Seller Information</h2>
+                <p><strong>Company Name:</strong> {{ plant.supplier.company_name }}</p>
+                <p><strong>Contact Number:</strong> {{ plant.supplier.contact_number }}</p>
+                <p><strong>Address:</strong> {{ plant.supplier.address }}</p>
                 <!-- Add to Cart Form -->
                 <form action="{% url 'add_to_cart' plant.id %}" method="post">
                     {% csrf_token %}
