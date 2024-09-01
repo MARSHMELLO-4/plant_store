@@ -1,4 +1,3 @@
-# comment
 import os
 import sys
 
