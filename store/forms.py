@@ -5,17 +5,22 @@ from .models import Customer, Supplier
 from .models import Plant
 
 # Supplier Sign-Up Form
+
 class SupplierSignUpForm(UserCreationForm):
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    email = forms.EmailField()
+    address = forms.CharField(widget=forms.Textarea)
     company_name = forms.CharField(max_length=255)
     contact_number = forms.CharField(max_length=15)
-    address = forms.CharField(widget=forms.Textarea)
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'company_name', 'contact_number', 'address']
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'address', 'company_name', 'contact_number']
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
         if commit:
             user.save()
             Supplier.objects.create(

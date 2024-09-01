@@ -1,8 +1,12 @@
 from django.conf import settings
 from django.db import models
-
+from django import forms
 class Supplier(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    email = forms.EmailField()
+    address = forms.CharField(widget=forms.Textarea)
     company_name = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=15)
     address = models.TextField()
