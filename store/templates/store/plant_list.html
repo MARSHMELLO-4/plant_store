@@ -11,9 +11,14 @@
             color: rgb(0, 0, 0);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
-
-        body {
-            margin: 0;
+        .section {
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+            border-radius: 9px;
+            margin: 20px 0;
+        }
+        ul {
+            list-style-type: none;
             padding: 0;
             overflow-x: hidden;
             position: relative;
@@ -120,6 +125,7 @@
             background-position: center;
         }
 
+
         .view-details {
             background-color: rgb(75, 137, 75);
             color: white;
@@ -145,7 +151,7 @@
             <a href="{% url 'plant_list' %}" style="margin-left: 200px;">Home</a>
             <a href="#about">About Us</a>
             <a href="#contact">Contact</a>
-            <a href="{% url 'update_customer_details' %}">Update Personal detail</a>
+            <a href="{% url 'update_customer_details' %}">Update detail</a>
             <a href="{% url 'cart' %}" style="text-align: center;margin-left: 370px;font-size: 15px;"><i
                     class="fa fa-shopping-basket" aria-hidden="true" style="font-size: 22px;"></i><br>View Cart</a>
             <a href="{% url 'index' %}" style="text-align: center;font-size: 15px;"><i class="fa fa-sign-out"
