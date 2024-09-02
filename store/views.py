@@ -1,46 +1,30 @@
-# store/views.py
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Plant, Category, Cart, CartItem
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .forms import SupplierSignUpForm, PlantForm
-from .models import Supplier, Plant
-from .decorators import supplier_required
-from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import SupplierSignUpForm
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Customer, Supplier
-from .forms import CustomerUpdateForm, SupplierUpdateForm
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Plant, Order, Customer
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import render, redirect
-from .forms import CustomerSignUpForm, SupplierSignUpForm
-#index
+from django.db import transaction
+from django.utils import timezone
+from .models import Plant, Category, Cart, CartItem, Order, Supplier
+from .forms import CustomerSignUpForm, SupplierSignUpForm, CustomerUpdateForm, SupplierUpdateForm, PlantForm
+from .decorators import supplier_required
+
 def index(request):
     return render(request, 'store/index.html')
 
-#plant list 
+# Plant list view
 def plant_list(request):
     categories = Category.objects.all()
     plants = Plant.objects.all()
     return render(request, 'store/plant_list.html', {'categories': categories, 'plants': plants})
 
-#plant detail
+# Plant detail view
 @login_required
 def plant_detail(request, pk):
     plant = get_object_or_404(Plant, pk=pk)
     return render(request, 'store/plant_detail.html', {'plant': plant})
 
-#login view 
+# Login view
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -52,23 +36,23 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'store/login.html', {'form': form})
 
-#signup view 
+# Signup view
 def signup(request):
     if request.method == 'POST':
         form = CustomerSignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')  # Redirect to login after successful sign-up
+            return redirect('login')
     else:
         form = CustomerSignUpForm()
     return render(request, 'store/signup.html', {'form': form})
 
-#logoutview
+# Logout view
 def logout_view(request):
     auth_logout(request)
     return redirect('index')
 
-#loginview
+# Add to cart view
 @login_required
 def add_to_cart(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
@@ -81,7 +65,7 @@ def add_to_cart(request, plant_id):
     
     return redirect('cart')
 
-#cartview
+# Cart view
 @login_required
 def cart_view(request):
     cart = get_object_or_404(Cart, user=request.user)
@@ -93,14 +77,14 @@ def cart_view(request):
     }
     return render(request, 'store/cart.html', context)
 
-#remove from cart
+# Remove from cart view
 @login_required
 def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id)
     cart_item.delete()
     return redirect('cart')
 
-#update card
+# Update cart view
 @login_required
 def update_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id)
@@ -111,7 +95,7 @@ def update_cart(request, item_id):
             cart_item.save()
     return redirect('cart')
 
-#supplier signup
+# Supplier signup view
 def supplier_signup(request):
     if request.method == 'POST':
         form = SupplierSignUpForm(request.POST)
@@ -123,7 +107,7 @@ def supplier_signup(request):
         form = SupplierSignUpForm()
     return render(request, 'store/supplier_signup.html', {'form': form})
 
-#supplier login
+# Supplier login view
 def supplier_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -135,26 +119,25 @@ def supplier_login(request):
         form = AuthenticationForm()
     return render(request, 'store/supplier_login.html', {'form': form})
 
-#supplier dashboard
+# Supplier dashboard view
+@login_required
+@supplier_required
 def supplier_dashboard(request):
-    # Ensure the user is a supplier
     supplier = request.user.supplier
     plants = supplier.plants.all()
-    orders = Order.objects.filter(plant__supplier=supplier)  # Get all orders related to this supplier
+    orders = Order.objects.filter(plant__supplier=supplier)
     context = {
         'supplier': supplier,
-        'orders': orders
+        'orders': orders,
+        'plants': plants,
     }
     return render(request, 'store/supplier_dashboard.html', context)
 
-#supplier add plant
+# Supplier add plant view
+@login_required
+@supplier_required
 def add_plant(request):
-    # Ensure the user is a supplier
-    try:
-        supplier = request.user.supplier
-    except Supplier.DoesNotExist:
-        return redirect('plant_list')  # Or handle appropriately
-
+    supplier = request.user.supplier
     if request.method == 'POST':
         form = PlantForm(request.POST, request.FILES)
         if form.is_valid():
@@ -166,14 +149,11 @@ def add_plant(request):
         form = PlantForm()
     return render(request, 'store/add_plant.html', {'form': form})
 
-#supplier edit plant 
+# Supplier edit plant view
+@login_required
+@supplier_required
 def edit_plant(request, plant_id):
-    # Ensure the user is a supplier
-    try:
-        supplier = request.user.supplier
-    except Supplier.DoesNotExist:
-        return redirect('plant_list')  # Or handle appropriately
-
+    supplier = request.user.supplier
     plant = get_object_or_404(Plant, id=plant_id, supplier=supplier)
     if request.method == 'POST':
         form = PlantForm(request.POST, request.FILES, instance=plant)
@@ -184,103 +164,81 @@ def edit_plant(request, plant_id):
         form = PlantForm(instance=plant)
     return render(request, 'store/edit_plant.html', {'form': form, 'plant': plant})
 
-#supplier delete plant
+# Supplier delete plant view
+@login_required
+@supplier_required
 def delete_plant(request, plant_id):
-    # Ensure the user is a supplier
-    try:
-        supplier = request.user.supplier
-    except Supplier.DoesNotExist:
-        return redirect('plant_list')  # Or handle appropriately
-
+    supplier = request.user.supplier
     plant = get_object_or_404(Plant, id=plant_id, supplier=supplier)
     if request.method == 'POST':
         plant.delete()
         return redirect('supplier_dashboard')
     return render(request, 'store/delete_plant.html', {'plant': plant})
 
+# Update customer details view
 @login_required
 def update_customer_details(request):
-    try:
-        customer = request.user.customer
-    except Customer.DoesNotExist:
-        customer = None
-
+    customer = request.user.customer
     if request.method == 'POST':
         form = CustomerUpdateForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
-            return redirect('plant_list')  # Redirect to a customer dashboard or some success page
+            return redirect('plant_list')
     else:
         form = CustomerUpdateForm(instance=customer)
     return render(request, 'store/update_customer_details.html', {'form': form})
 
+# Update supplier details view
 @login_required
+@supplier_required
 def update_supplier_details(request):
     supplier = request.user.supplier
     if request.method == 'POST':
         form = SupplierUpdateForm(request.POST, instance=supplier)
         if form.is_valid():
             form.save()
-            return redirect('supplier_dashboard')  # Redirect to a supplier dashboard or some success page
+            return redirect('supplier_dashboard')
     else:
         form = SupplierUpdateForm(instance=supplier)
     return render(request, 'store/update_supplier_details.html', {'form': form})
 
-
+# Place order view
 @login_required
 def place_order(request):
+    user = request.user
+    cart = Cart.objects.get(user=user)
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect('cart')
+
     try:
-        customer = request.user.customer
-    except Customer.DoesNotExist:
-        return redirect('complete_profile')
-
-    # Check if all required fields in the customer profile are filled
-    if not customer.first_name or not customer.last_name or not customer.address:
-        messages.error(request, "Please complete your profile before placing an order.")
-        return redirect('complete_profile')
-
-    cart = Cart.objects.get(user=request.user)
-    cart_items = cart.cartitem_set.all()
-
-    if request.method == "POST":
-        for item in cart_items:
-            plant = item.plant
-            quantity = item.quantity
-
-            if plant.stock >= quantity:
-                Order.objects.create(
-                    customer=customer,
+        with transaction.atomic():
+            for item in cart_items:
+                plant = item.plant
+                quant = item.quantity
+                order = Order.objects.create(
+                    customer=user.customer,
                     plant=plant,
-                    quantity=quantity
+                    quantity=quant,
                 )
-                plant.stock -= quantity
-                plant.save()
-            else:
-                messages.error(request, f"Not enough stock available for {plant.name}.")
-                return redirect('cart')
-
-        cart.cartitem_set.all().delete()
-
+            cart_items.delete()  # Clear the cart after placing the order
         messages.success(request, "Order placed successfully!")
         return redirect('order_success')
+    except Exception as e:
+        messages.error(request, f"An error occurred while placing the order: {str(e)}")
+        return redirect('cart')
 
-    return render(request, 'store/place_order.html', {'cart_items': cart_items})
-
-
-
-
-
-# Order success
+# Order success view
+@login_required
 def order_success(request):
     return render(request, 'store/order_success.html')
 
+# Complete customer profile view
 @login_required
 def complete_profile(request):
-    try:
-        customer = request.user.customer
-    except Customer.DoesNotExist:
-        customer = None
-
+    customer = request.user.customer
     if request.method == 'POST':
         form = CustomerUpdateForm(request.POST, instance=customer)
         if form.is_valid():
@@ -289,5 +247,4 @@ def complete_profile(request):
             return redirect('plant_list')
     else:
         form = CustomerUpdateForm(instance=customer)
-
     return render(request, 'store/complete_profile.html', {'form': form})

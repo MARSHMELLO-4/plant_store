@@ -1,28 +1,38 @@
 {% load static %}
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Place Order</title>
 </head>
 <body>
-    <h2>Order {{ plant.name }}</h2>
+    <h2>Place Your Order</h2>
 
-<form method="post">
-    {% csrf_token %}
-    <label for="quantity">Quantity:</label>
-    <input type="number" name="quantity" min="1" max="{{ plant.stock }}" required>
-    <button type="submit">Place Order</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {% for item in cart_items %}
+            <li>
+                {{ item.plant.name }} - ₹{{ item.plant.price }} x {{ item.quantity }} = ₹{{ item.plant.price|mul:item.quantity }}
+            </li>
+            {% endfor %}
+        </ul>
+        <p><strong>Total Amount:</strong> ₹{{ total_amount }}</p>
+        <button type="submit">Place Order</button>
+    </form>
 
-{% if messages %}
-    <ul>
-    {% for message in messages %}
-        <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
+    <a href="{% url 'cart' %}">Go back to Cart</a>
+
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 
 </body>
 </html>

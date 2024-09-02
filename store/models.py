@@ -63,8 +63,18 @@ class CartItem(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
     order_date = models.DateTimeField(auto_now_add=True)
-
+    quantity = models.PositiveIntegerField(default=1)
     def __str__(self):
         return f'Order {self.id} by {self.customer}'
+    
+from django.db import models
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='order_items')
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.quantity} x {self.plant.name}"
+
