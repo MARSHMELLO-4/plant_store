@@ -248,3 +248,13 @@ def complete_profile(request):
     else:
         form = CustomerUpdateForm(instance=customer)
     return render(request, 'store/complete_profile.html', {'form': form})
+
+@login_required
+def customer_orders(request):
+    customer = request.user.customer
+    orders = Order.objects.filter(customer=customer).order_by('-order_date')  # Orders in descending order of date
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'store/customer_orders.html', context)
+
