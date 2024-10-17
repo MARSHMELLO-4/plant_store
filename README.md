@@ -6,6 +6,14 @@
     <meta name="description" content="Plant E-commerce Store built with Django. Customers can browse, order plants, while suppliers can manage listings and orders.">
 </head>
 <body>
+<div style="display: flex; overflow-x: auto; white-space: nowrap;">
+    <img src="/githubimgs/loginpage.png" alt="login/signup page" style="width:100px; height:auto; margin-right: 10px;">
+    <img src="/githubimgs/customer_dashboard.png" alt="customer dashboard" style="width:200px; height:auto; margin-right: 10px;">
+    <img src="/githubimgs/cart.png" alt="cart" style="width:200px; height:auto; margin-right: 10px;">
+    <img src="/githubimgs/orderhistory.png" alt="order history" style="width:200px; height:auto; margin-right: 10px;">
+    <img src="/githubimgs/supplier_dashboard.png" alt="supplier dashboard" style="width:200px; height:auto;">
+    <img src="/githubimgs/supplier_order_details.png" alt="supplier order details" style="width:200px; height:auto;">
+</div>
 
 <h1>Plant E-commerce Store (Django Web Application)</h1>
 
