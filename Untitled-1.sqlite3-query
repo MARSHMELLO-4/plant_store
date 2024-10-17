@@ -1,0 +1,15 @@
+-- database: c:\Users\aman2\OneDrive\Documents\plant_store\db.sqlite3
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT * FROM auth_group;
+
+SELECT * from store_plant where category_id = 3;
+SELECT * from store_plant as plant inner JOIN store_category as category 
+on plant.category_id = category.id; 
+
+INSERT INTO store_order VALUES(
+    22,2024-09-15,6,20,3
+);
+SELECT * from store_customer as customer INNER JOIN auth_user as u ON
+customer.user_id = u.id;

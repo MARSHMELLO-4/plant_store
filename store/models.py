@@ -1,19 +1,23 @@
 from django.conf import settings
 from django.db import models
 from django import forms
+
+from django.conf import settings
+from django.db import models
+
 class Supplier(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
-    email = forms.EmailField()
-    address = forms.CharField(widget=forms.Textarea)
+    first_name = models.CharField(max_length=255)  # Changed from forms.CharField
+    last_name = models.CharField(max_length=255)   # Changed from forms.CharField
+    email = models.EmailField()                    # Changed from forms.EmailField
+    address = models.TextField()                   # Changed from forms.CharField(widget=forms.Textarea)
     company_name = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=15)
-    address = models.TextField()
 
     def __str__(self):
         return self.company_name
-    
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -59,22 +63,12 @@ class CartItem(models.Model):
 
     def get_total_price(self):
         return self.quantity * self.plant.price
-    
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    plant = models.ForeignKey(Plant, on_delete=models.PROTECT)  # Ensuring plants in orders cannot be deleted
     order_date = models.DateTimeField(auto_now_add=True)
     quantity = models.PositiveIntegerField(default=1)
+
     def __str__(self):
         return f'Order {self.id} by {self.customer}'
-    
-from django.db import models
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='order_items')
-    quantity = models.PositiveIntegerField()
-
-    def __str__(self):
-        return f"{self.quantity} x {self.plant.name}"
-
